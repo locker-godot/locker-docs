@@ -1,0 +1,27 @@
+[project]
+name = "locker-docs"
+version = "0.1.0"
+authors = [
+  { name="Daniel Sousa (nadjiel)", email="oliveira.daaaaniel@gmail.com" },
+]
+description = "Repository that manages the generation of documentation for the Locker framework"
+keywords=[ "python", "godot", "documentation", "docs", "godocs", "sphinx", "jinja2", "locker" ]
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.0"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+]
+dependencies = [
+  "sphinx",
+  "godocs",
+  "godocs-jinja",
+]
+
+[project.urls]
+Homepage = "https://github.com/locker-godot/locker-docs"
+Issues = "https://github.com/locker-godot/locker-docs/issues"
