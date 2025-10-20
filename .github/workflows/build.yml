@@ -1,0 +1,51 @@
+name: Build Documentation
+
+on:
+  repository_dispatch:
+    types: [docs_update]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      
+      - name: Set up Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.3.0
+          use-dotnet: false
+
+      - name: Checkout locker-docs
+        uses: actions/checkout@v4
+      
+      - name: Checkout locker
+        uses: actions/checkout@v4
+        with:
+          repository: locker-godot/locker
+          path: source-repo
+      
+      - name: Installs Dependencies
+        run: pip install .
+      
+      - name: Generate Documentation XML
+        working-directory: source-repo
+        run: godot --headless --doctool ../source-docs --no-docbase --gdscript-docs res://addons/locker
+      
+      - name: Generate Documentation RST
+        run: |
+          # Removes previous documentation
+          rm source/*.rst
+          
+          # Generates new documentation
+          godocs construct jinja source-docs source
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add source
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update docs from ${{ github.sha }}" && git push)
