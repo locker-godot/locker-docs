@@ -41,7 +41,7 @@ jobs:
           rm source/*.rst
           
           # Generates new documentation
-          godocs construct jinja source-docs source
+          godocs construct jinja source-docs source --options-file godocs-options.json
 
       - name: Commit and Push
         run: |
