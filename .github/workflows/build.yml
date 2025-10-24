@@ -37,9 +37,17 @@ jobs:
       - name: Installs Dependencies
         run: pip install .
       
+      # This step is necessary, so Godot imports Plugin classes and
+      # has their data available later on doctool generation.
+      - name: Import Godot Plugins
+        working-directory: source-repo
+        run: godot --headless --editor --quit-after 60
+
       - name: Generate Documentation XML
         working-directory: source-repo
-        run: godot --headless --doctool ../source-docs --no-docbase --gdscript-docs res://addons/locker
+        # The --quit option is necessary because Godot'd doctool
+        # doesn't quit automatically on end
+        run: godot --headless --doctool ../source-docs --no-docbase --gdscript-docs res://addons/locker --quit
       
       - name: Generate Documentation RST
         run: |
