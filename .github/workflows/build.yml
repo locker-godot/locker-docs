@@ -1,8 +1,14 @@
-name: Build Documentation
+name: Deploy Documentation
 
 on:
+  workflow_dispatch:
   repository_dispatch:
-    types: [docs_update]
+    types: [deploy_documentation]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -43,9 +49,22 @@ jobs:
           # Generates new documentation
           godocs construct jinja source-docs source --options-file godocs-options.json
 
-      - name: Commit and Push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add source
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update docs from ${{ github.sha }}" && git push)
+      - name: Generate Documentation HTML
+        run: sphinx-build -b html source build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
